@@ -20,7 +20,7 @@ class ResultFragment : Fragment() {
         _binding = FragmentResultBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        binding.wonLost.text = ResultFragmentArgs.fromBundle(requireArguments()).result
+        binding.wonLost.text = ResultFragmentArgs.fromBundle(requireArguments()).result //資料存在Bundle，所以wonLost.text不會因畫面旋轉遺失
 
         binding.newGameButton.setOnClickListener {
             view.findNavController()
