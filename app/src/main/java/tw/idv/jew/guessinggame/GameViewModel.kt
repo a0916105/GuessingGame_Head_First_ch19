@@ -53,4 +53,9 @@ class GameViewModel : ViewModel() {
         message += " The word was $secretWord."
         return message
     }
+
+    //當view model即將被清除時執行的程式
+    override fun onCleared() {  //經測試此APP沒有呼叫
+        Log.i("GameViewModel", "ViewModel cleared")
+    }
 }
