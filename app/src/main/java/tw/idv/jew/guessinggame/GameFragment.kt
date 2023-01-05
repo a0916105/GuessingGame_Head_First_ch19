@@ -44,6 +44,11 @@ class GameFragment : Fragment() {
         return view
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     //設定layout的text view
     private fun updateScreen() {
         binding.word.text = secretWordDisplay
