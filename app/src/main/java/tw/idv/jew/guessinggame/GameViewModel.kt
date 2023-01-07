@@ -1,18 +1,20 @@
 package tw.idv.jew.guessinggame
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
     val words = listOf("Android", "Activity", "Fragment")   //可讓用戶猜的單字清單
     val secretWord = words.random().uppercase() //讓用戶猜的單字
-    var secretWordDisplay = ""  //顯示出來的單字
+
+    val secretWordDisplay = MutableLiveData<String>()  //顯示出來的單字
     var correctGuesses = "" //猜對的答案
-    var incorrectGuesses = "" //猜錯的答案
-    var livesLeft = 8   //剩下幾條命
+    val incorrectGuesses = MutableLiveData<String>("") //猜錯的答案
+    val livesLeft = MutableLiveData<Int>(8)   //剩下幾條命
 
     init {
-        secretWordDisplay = deriveSecretWordDisplay()   //推導秘密文字
+        secretWordDisplay.value = deriveSecretWordDisplay()   //推導秘密文字
     }
 
     //建立要顯示在畫面上的秘密單字String
@@ -34,17 +36,17 @@ class GameViewModel : ViewModel() {
         if (guess.length == 1) {
             if (secretWord.contains(guess)) {
                 correctGuesses += guess
-                secretWordDisplay = deriveSecretWordDisplay()
+                secretWordDisplay.value = deriveSecretWordDisplay()
             } else {
-                incorrectGuesses += "$guess "
-                livesLeft--
+                incorrectGuesses.value += "$guess "
+                livesLeft.value = livesLeft.value?.minus(1)
             }
         }
     }
 
-    fun isWon() = secretWord.equals(secretWordDisplay, true)
+    fun isWon() = secretWord.equals(secretWordDisplay.value, true)
 
-    fun isLost() = livesLeft <= 0   //當用戶沒命時，輸掉遊戲
+    fun isLost() = (livesLeft.value ?: 0) <= 0   //(如果是null回傳0)當用戶沒命時，輸掉遊戲
 
     fun wonLostMessage() : String {
         var message = ""
