@@ -1,20 +1,31 @@
 package tw.idv.jew.guessinggame
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
-    val words = listOf("Android", "Activity", "Fragment")   //可讓用戶猜的單字清單
-    val secretWord = words.random().uppercase() //讓用戶猜的單字
+    private val words = listOf("Android", "Activity", "Fragment")   //可讓用戶猜的單字清單
+    private val secretWord = words.random().uppercase() //讓用戶猜的單字
 
-    val secretWordDisplay = MutableLiveData<String>()  //顯示出來的單字
-    var correctGuesses = "" //猜對的答案
-    val incorrectGuesses = MutableLiveData<String>("") //猜錯的答案
-    val livesLeft = MutableLiveData<Int>(8)   //剩下幾條命
+    private val _secretWordDisplay = MutableLiveData<String>()
+    val secretWordDisplay: LiveData<String>  //顯示出來的單字
+        get() = _secretWordDisplay  //讓外界能讀_的backing屬性
+
+    private var correctGuesses = "" //猜對的答案
+
+    private val _incorrectGuesses = MutableLiveData<String>("")
+    val incorrectGuesses: LiveData<String> //猜錯的答案
+        get() = _incorrectGuesses   //讓外界能讀_的backing屬性
+
+    private val _livesLeft = MutableLiveData<Int>(8)
+    val livesLeft: LiveData<Int>   //剩下幾條命
+        get() = _livesLeft  //讓外界能讀_的backing屬性
 
     init {
-        secretWordDisplay.value = deriveSecretWordDisplay()   //推導秘密文字
+        //LiveData只能讀，所以更新使用_
+        _secretWordDisplay.value = deriveSecretWordDisplay()   //推導秘密文字
     }
 
     //建立要顯示在畫面上的秘密單字String
@@ -36,10 +47,10 @@ class GameViewModel : ViewModel() {
         if (guess.length == 1) {
             if (secretWord.contains(guess)) {
                 correctGuesses += guess
-                secretWordDisplay.value = deriveSecretWordDisplay()
+                _secretWordDisplay.value = deriveSecretWordDisplay()
             } else {
-                incorrectGuesses.value += "$guess "
-                livesLeft.value = livesLeft.value?.minus(1)
+                _incorrectGuesses.value += "$guess "
+                _livesLeft.value = livesLeft.value?.minus(1)
             }
         }
     }
