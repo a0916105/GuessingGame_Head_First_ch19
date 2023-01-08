@@ -33,7 +33,7 @@ class ResultFragment : Fragment() {
             //如果還沒view model物件，ViewModelProvider會使用view model factory來建立view model
             .get(ResultViewModel::class.java)
 
-        binding.wonLost.text = viewModel.result //改由viewModel來取得result，之前是從Bundle
+        binding.resultViewModel = viewModel //改用data binding（設定layout的data binding變數）
 
         binding.newGameButton.setOnClickListener {
             view.findNavController()
