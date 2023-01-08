@@ -23,6 +23,10 @@ class GameViewModel : ViewModel() {
     val livesLeft: LiveData<Int>   //剩下幾條命
         get() = _livesLeft  //讓外界能讀_的backing屬性
 
+    private val _gameOver = MutableLiveData<Boolean>(false)
+    val gameOver: LiveData<Boolean>
+        get() = _gameOver
+
     init {
         //LiveData只能讀，所以更新使用_
         _secretWordDisplay.value = deriveSecretWordDisplay()   //推導秘密文字
@@ -52,12 +56,14 @@ class GameViewModel : ViewModel() {
                 _incorrectGuesses.value += "$guess "
                 _livesLeft.value = livesLeft.value?.minus(1)
             }
+
+            if (isWon() || isLost()) _gameOver.value = true
         }
     }
 
-    fun isWon() = secretWord.equals(secretWordDisplay.value, true)
+    private fun isWon() = secretWord.equals(secretWordDisplay.value, true)
 
-    fun isLost() = (livesLeft.value ?: 0) <= 0   //(如果是null回傳0)當用戶沒命時，輸掉遊戲
+    private fun isLost() = (livesLeft.value ?: 0) <= 0   //(如果是null回傳0)當用戶沒命時，輸掉遊戲
 
     fun wonLostMessage() : String {
         var message = ""
