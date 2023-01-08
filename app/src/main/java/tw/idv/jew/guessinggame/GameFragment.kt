@@ -37,15 +37,18 @@ class GameFragment : Fragment() {
             binding.word.text = newValue
         })
 
-        binding.guessButton.setOnClickListener {
-            viewModel.makeGuess(binding.guess.text.toString().uppercase())
-            binding.guess.text = null   //重設edit text
-
-            if (viewModel.isWon() || viewModel.isLost()) {  //在用戶贏或輸時，前往ResultFragment，並將wonLostMessage()的回傳值傳給它
+        viewModel.gameOver.observe(viewLifecycleOwner, Observer { newValue ->
+            if (newValue) {
                 val action = GameFragmentDirections
                     .actionGameFragmentToResultFragment(viewModel.wonLostMessage())
                 view.findNavController().navigate(action)
             }
+        })
+
+        binding.guessButton.setOnClickListener {
+            viewModel.makeGuess(binding.guess.text.toString().uppercase())
+            binding.guess.text = null   //重設edit text
+
         }
 
         return view
