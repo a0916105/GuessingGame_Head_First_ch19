@@ -73,6 +73,10 @@ class GameViewModel : ViewModel() {
         return message
     }
 
+    fun finishGame() {
+        _gameOver.value = true
+    }
+
     //當view model即將被清除時執行的程式
     override fun onCleared() {  //經測試此APP沒有呼叫
         Log.i("GameViewModel", "ViewModel cleared")
