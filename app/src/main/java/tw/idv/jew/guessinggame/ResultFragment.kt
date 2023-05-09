@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material.Text
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import tw.idv.jew.guessinggame.databinding.FragmentResultBinding
@@ -21,7 +22,12 @@ class ResultFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentResultBinding.inflate(inflater, container, false)
+        _binding = FragmentResultBinding.inflate(inflater, container, false).apply {    //使用apply將composable加入UI
+            //告訴ComposeView要加入哪些composable
+            composeView.setContent {
+                Text("This is a composable")
+            }
+        }
         val view = binding.root
 
         val result = ResultFragmentArgs.fromBundle(requireArguments()).result
