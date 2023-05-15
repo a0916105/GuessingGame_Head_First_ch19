@@ -13,6 +13,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -36,7 +38,8 @@ class ResultFragment : Fragment() {
                 //將ResultFragmentContent加入layout的composeView，並套用預設的Material佈景主題
                 MaterialTheme {
                     Surface {
-                        view?.let { ResultFragmentContent(it) }
+                        //view呼叫fragment的getview()方法，它回傳根view
+                        view?.let { ResultFragmentContent(it, viewModel) }
                     }
                 }
             }
@@ -69,6 +72,13 @@ class ResultFragment : Fragment() {
 }
 
 @Composable
+fun ResultText(result: String) {
+    Text(text = result,
+        fontSize = 28.sp,
+        textAlign = TextAlign.Center)
+}
+
+@Composable
 fun NewGameButton(clicked: () -> Unit) {
     Button(onClick = clicked) {
         Text("Start New Game")
@@ -76,9 +86,11 @@ fun NewGameButton(clicked: () -> Unit) {
 }
 
 @Composable
-fun ResultFragmentContent(view: View) {
+fun ResultFragmentContent(view: View, viewModel: ResultViewModel) {
     Column(modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally) {
+        ResultText(viewModel.result)    //將ResultText加入UI，並讓它使用viewModel的result屬性作為文字
+
         NewGameButton {
             view.findNavController()
                 .navigate(R.id.action_resultFragment_to_gameFragment)
