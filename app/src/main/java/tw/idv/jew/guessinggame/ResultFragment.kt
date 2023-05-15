@@ -1,11 +1,13 @@
 package tw.idv.jew.guessinggame
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.Text
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import tw.idv.jew.guessinggame.databinding.FragmentResultBinding
@@ -25,7 +27,12 @@ class ResultFragment : Fragment() {
         _binding = FragmentResultBinding.inflate(inflater, container, false).apply {    //使用apply將composable加入UI
             //告訴ComposeView要加入哪些composable
             composeView.setContent {
-                Text("This is a composable")
+                //將ResultFragmentContent加入layout的composeView，並套用預設的Material佈景主題
+                MaterialTheme {
+                    Surface {
+                        ResultFragmentContent()
+                    }
+                }
             }
         }
         val view = binding.root
@@ -53,4 +60,9 @@ class ResultFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+}
+
+@Composable
+fun ResultFragmentContent() {
+
 }
