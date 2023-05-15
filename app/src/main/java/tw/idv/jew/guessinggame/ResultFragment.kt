@@ -4,9 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -30,7 +36,7 @@ class ResultFragment : Fragment() {
                 //將ResultFragmentContent加入layout的composeView，並套用預設的Material佈景主題
                 MaterialTheme {
                     Surface {
-                        ResultFragmentContent()
+                        view?.let { ResultFragmentContent(it) }
                     }
                 }
             }
@@ -63,6 +69,19 @@ class ResultFragment : Fragment() {
 }
 
 @Composable
-fun ResultFragmentContent() {
+fun NewGameButton(clicked: () -> Unit) {
+    Button(onClick = clicked) {
+        Text("Start New Game")
+    }
+}
 
+@Composable
+fun ResultFragmentContent(view: View) {
+    Column(modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        NewGameButton {
+            view.findNavController()
+                .navigate(R.id.action_resultFragment_to_gameFragment)
+        }
+    }
 }
