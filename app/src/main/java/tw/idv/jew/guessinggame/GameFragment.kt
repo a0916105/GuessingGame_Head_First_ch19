@@ -11,7 +11,10 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Observer
@@ -71,6 +74,15 @@ class GameFragment : Fragment() {
 }
 
 @Composable
+fun EnterGuess(guess: String, changed: (String) -> Unit) {
+    TextField(
+        value = guess,
+        label = { Text("Guess a letter") },
+        onValueChange = changed
+    )
+}
+
+@Composable
 fun FinishGameButton(clicked: () -> Unit) {
     Button(onClick = clicked) {
         Text("Finish Game")
@@ -79,10 +91,18 @@ fun FinishGameButton(clicked: () -> Unit) {
 
 @Composable
 fun GameFragmentContent(viewModel: GameViewModel) {
-    Column(modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        FinishGameButton {
-            viewModel.finishGame()
+    val guess = remember { mutableStateOf("") }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        EnterGuess(guess.value ) { guess.value = it }
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            FinishGameButton {
+                viewModel.finishGame()
+            }
         }
     }
 }
