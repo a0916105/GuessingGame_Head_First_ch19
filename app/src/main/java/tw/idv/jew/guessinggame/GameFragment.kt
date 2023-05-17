@@ -7,16 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -74,6 +72,16 @@ class GameFragment : Fragment() {
 }
 
 @Composable
+fun IncorrectGuessesText(viewModel: GameViewModel) {
+    //使用observeAsState()來回應LiveData
+    val incorrectGuesses = viewModel.incorrectGuesses.observeAsState()
+    incorrectGuesses.value?.let {
+        //在composable中，使用String資源
+        Text(stringResource(R.string.incorrect_guesses, it))
+    }
+}
+
+@Composable
 fun EnterGuess(guess: String, changed: (String) -> Unit) {
     TextField(
         value = guess,
@@ -101,6 +109,8 @@ fun GameFragmentContent(viewModel: GameViewModel) {
     val guess = remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        IncorrectGuessesText(viewModel)
+
         EnterGuess(guess.value ) { guess.value = it }
 
         Column(
