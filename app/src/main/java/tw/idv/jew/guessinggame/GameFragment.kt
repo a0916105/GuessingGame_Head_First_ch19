@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
@@ -84,11 +84,18 @@ fun IncorrectGuessesText(viewModel: GameViewModel) {
 }
 
 @Composable
-fun EnterGuess(guess: String, changed: (String) -> Unit) {
+fun EnterGuess(guess: MutableState<String>) {
     TextField(
-        value = guess,
+        value = guess.value,
         label = { Text("Guess a letter") },
-        onValueChange = changed
+        onValueChange  = {
+            //限制只能輸入一個字母
+            if (it.length == 1)
+                if(Character.isLowerCase(it.toCharArray()[0]) || Character.isUpperCase(it.toCharArray()[0]))
+                    guess.value = it
+        },
+        //確保輸入的是ASCII characters
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii)
     )
 }
 
@@ -122,7 +129,7 @@ fun GameFragmentContent(viewModel: GameViewModel) {
 
         IncorrectGuessesText(viewModel)
 
-        EnterGuess(guess.value) { guess.value = it }
+        EnterGuess(guess)
 
         Column(
             modifier = Modifier.fillMaxWidth(),
