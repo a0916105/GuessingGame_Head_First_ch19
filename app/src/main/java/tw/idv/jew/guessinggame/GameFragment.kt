@@ -1,7 +1,6 @@
 package tw.idv.jew.guessinggame
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,27 +15,34 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import tw.idv.jew.guessinggame.databinding.FragmentGameBinding
 
 class GameFragment : Fragment() {
-    private var _binding: FragmentGameBinding? = null
-    private val binding get() = _binding!!
-
     lateinit var viewModel: GameViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        // Inflate the layout for this fragment
-        _binding = FragmentGameBinding.inflate(inflater, container, false).apply {
-            composeView.setContent {
+        viewModel = ViewModelProvider(this).get(GameViewModel::class.java)
+
+        viewModel.gameOver.observe(viewLifecycleOwner, Observer { newValue ->
+            if (newValue) {
+                val action = GameFragmentDirections
+                    .actionGameFragmentToResultFragment(viewModel.wonLostMessage())
+                view?.findNavController()?.navigate(action)
+            }
+        })
+
+        return ComposeView(requireContext()).apply {
+            setContent {
                 MaterialTheme {
                     Surface {
                         GameFragmentContent(viewModel)
@@ -44,34 +50,6 @@ class GameFragment : Fragment() {
                 }
             }
         }
-        val view = binding.root
-
-        viewModel = ViewModelProvider(this).get(GameViewModel::class.java)
-
-        binding.gameViewModel = viewModel   //將viewModel指派給gameViewModel的data binding
-        //更新畫面
-        binding.lifecycleOwner = viewLifecycleOwner //讓每一個view直接回應live data的改變（不需使用observe()來寫程式碼更新）
-
-        viewModel.gameOver.observe(viewLifecycleOwner, Observer { newValue ->
-            if (newValue) {
-                val action = GameFragmentDirections
-                    .actionGameFragmentToResultFragment(viewModel.wonLostMessage())
-                view.findNavController().navigate(action)
-            }
-        })
-
-        binding.guessButton.setOnClickListener {
-            viewModel.makeGuess(binding.guess.text.toString().uppercase())
-            binding.guess.text = null   //重設edit text
-
-        }
-
-        return view
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
 
@@ -79,9 +57,11 @@ class GameFragment : Fragment() {
 fun SecretWordDisplay(viewModel: GameViewModel) {
     val display = viewModel.secretWordDisplay.observeAsState()
     display.value?.let {
-        Text(text = it,
+        Text(
+            text = it,
             letterSpacing = 0.1.em,
-            fontSize = 36.sp)
+            fontSize = 36.sp
+        )
     }
 }
 
@@ -131,8 +111,10 @@ fun GameFragmentContent(viewModel: GameViewModel) {
     val guess = remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
             SecretWordDisplay(viewModel)
         }
 
@@ -140,7 +122,7 @@ fun GameFragmentContent(viewModel: GameViewModel) {
 
         IncorrectGuessesText(viewModel)
 
-        EnterGuess(guess.value ) { guess.value = it }
+        EnterGuess(guess.value) { guess.value = it }
 
         Column(
             modifier = Modifier.fillMaxWidth(),
